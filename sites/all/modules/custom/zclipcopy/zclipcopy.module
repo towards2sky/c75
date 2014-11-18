@@ -1,0 +1,114 @@
+<?php
+
+function zclipcopy_init(){
+  $moviepath = libraries_get_path('jquery.zclip').'/ZeroClipboard.swf';
+  variable_get('same_page_redirection', 'no');
+  $js_setting_variables = array(
+      'moviepath'=> $moviepath,
+      'coupon_same_page_redirection' => variable_get('same_page_redirection', 'off'),
+      'coupon_new_page_redirection' => variable_get('new_page_redirection', 'off'),
+      );
+//  print '<pre>';
+//  print_r($js_setting_variables);
+//  print '</pre>';
+  drupal_add_js(array('zclipcopy' => $js_setting_variables), 'setting');
+	drupal_add_js(libraries_get_path('jquery.zclip') .'/jquery.zclip.js', array('scope' => 'footer', 'every_page' => TRUE));
+  drupal_add_js(drupal_get_path('module','zclipcopy') .'/zcopy.js',array('scope' => 'footer', 'every_page' => TRUE));
+  drupal_add_css(drupal_get_path('module', 'zclipcopy') . '/css/zcopy.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+
+
+function zclipcopy_menu() {
+  
+   // Administration pages.
+  $items['admin/config/coupon'] = array(
+    'title' => t('Coupon'),
+    'description' => t('Configure Coupon Settings.'),
+    'weight' => -9,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'position' => 'left',
+  );
+  
+  $items['admin/config/coupon/zclip'] = array( // this is an example of configuration link
+		'title' => t('zClip Copy'), 
+		'description' => t('Configure zclip settings'),
+		'page callback' => 'drupal_get_form',
+    'page arguments' => array('zclipcopy_settings_form'),		
+		'type' => MENU_NORMAL_ITEM, 
+		'access arguments' => array('administer site configuration') ,
+	);
+  
+  return $items;
+}
+
+/**
+ * Admin settings menu callback.
+ *
+ * @see jquery_update_menu()
+ */
+function zclipcopy_settings_form() {
+  $form['coupon_list'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Coupon Views List Setting'),
+  );
+  
+  $form['coupon_list']['same_page_redirection'] = array(
+    '#type' => 'select',
+    '#title' => t('Same page redirection'),
+    '#options' => array(
+      'on' => 'On',
+      'off' => 'Off',
+    ),
+    '#default_value' => variable_get('same_page_redirection', 'off'),
+    '#description' => t('Recirect same into referral url while click on show coupon.'),
+  );
+  
+  $form['coupon_list']['new_page_redirection'] = array(
+    '#type' => 'select',
+    '#title' => t('Open current cuopon page in new window'),
+    '#options' => array(
+      'on' => 'On',
+      'off' => 'Off',
+    ),
+    '#default_value' => variable_get('new_page_redirection', 'off'),
+    '#description' => t('Open currect coupon in tab while click on show coupon.'),
+  );
+  
+   $form['coupon_node'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Coupon Node view Setting'),
+  );
+  
+  $form['coupon_node']['same_page_redirection_on_coupon_view'] = array(
+    '#type' => 'select',
+    '#title' => t('Same page redirection on coupon full node'),
+    '#options' => array(
+      'on' => 'On',
+      'off' => 'Off',
+    ),
+    '#default_value' => variable_get('same_page_redirection_on_coupon_view', 'off'),
+    '#description' => t('Recirect same into referral url while click on show coupon.'),
+  );
+  
+  $form['coupon_node']['new_page_redirection_on_coupon_view'] = array(
+    '#type' => 'select',
+    '#title' => t('Open current cuopon page in new window'),
+    '#options' => array(
+      'on' => 'On',
+      'off' => 'Off',
+    ),
+    '#default_value' => variable_get('new_page_redirection_on_coupon_view', 'off'),
+    '#description' => t('Open currect coupon in tab while click on show coupon.'),
+  );
+  
+  
+  return system_settings_form($form);
+}
