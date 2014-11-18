@@ -1,0 +1,33 @@
+<?php
+
+function coupon_meta_init(){
+  
+   $html_head = array(
+    'browser_cache' => array(
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'content' => 'no-cache, no-store, must-revalidate',
+        'http-equiv' => 'Cache-Control'
+      )
+    ),
+    'browser_pragma' => array(
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'content' => 'no-cache',
+        'http-equiv' => 'Pragma'
+      )
+    ),
+    'browser_expires' => array(
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'content' => '0',
+        'http-equiv' => 'Expires'
+      )
+    ),
+  );
+  foreach ($html_head as $key => $data) {
+    drupal_add_html_head($data, $key);
+  }
+  
+}
+

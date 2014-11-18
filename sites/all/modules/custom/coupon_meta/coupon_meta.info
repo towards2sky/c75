@@ -1,5 +1,5 @@
-name = zClip Copy
-description = zClip copy 
+name = Coupon Metatage
+description = Coupon Meta tag
 core = 7.x
 scripts[] = zcopy.js
 package = coupon
