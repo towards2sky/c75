@@ -408,7 +408,7 @@ function views_ui_add_form($form, &$form_state) {
  */
 function views_element_validate_integer($element, &$form_state) {
   $value = $element['#value'];
-  if ($value !== '' && (!is_numeric($value) || intval($value) != $value)) {
+  if ($value !== '' && (!is_numeric($value) || intval($value) != $value || abs($value) != $value)) {
     form_error($element, t('%name must be a positive integer.', array('%name' => $element['#title'])));
   }
 }
@@ -2637,7 +2637,6 @@ function views_ui_standard_display_dropdown(&$form, &$form_state, $section) {
   $display_id = $form_state['display_id'];
   $displays = $view->display;
   $current_display = $view->display[$display_id];
-  $time  = time();
 
   // Add the "2 of 3" progress indicator.
   // @TODO: Move this to a separate function if it's needed on any forms that
@@ -2654,8 +2653,6 @@ function views_ui_standard_display_dropdown(&$form, &$form_state, $section) {
   // Determine whether any other displays have overrides for this section.
   $section_overrides = FALSE;
   $section_defaulted = $current_display->handler->is_defaulted($section);
-  
-  
   foreach ($displays as $id => $display) {
     if ($id === 'default' || $id === $display_id) {
       continue;
