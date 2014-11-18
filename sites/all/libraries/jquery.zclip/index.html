@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>jquery.zeroclipboard Demo</title>
+  <style type="text/css">
+    .btn {
+     
+    }
+    .btn.hover {
+      background-color: green;
+    }
+    .btn.active {
+      background-color: red;
+    }
+  </style>
+  <!-- Load local jQuery. This can be overridden with a ?jquery=___ param. -->
+  <!-- <script src="../libs/jquery-loader.js"></script> -->
+  <!-- Load local lib and tests. -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  
+ <script type="text/javascript" src="jquery.zclip.js"></script>
+ 
+</head>
+<body>
+  <div id="demo-space">
+
+    <div id="delegate-bindings">
+      <h2>Delegate bindings:</h2>
+<!--      <button id="del_btn1" class="btn" type="button">beforecopy</button>
+      <button id="del_btn2" class="btn" type="button">copy</button>
+      <button id="del_btn3" class="btn" type="button">aftercopy</button>
+-->      
+	  <div class="just" >
+      <button id="copy-description1" class="btn" >Copy to Clipboard</button>
+      <input type="text" id="copy-description1" value="Clipboard Text 8"/>
+      </div>	
+      
+      <div class="just" >
+      <button id="copy-description2" class="btn" >Copy to Clipboard</button>
+      <input type="text" id="copy-description2"  value="Clipboard Text 6"/>
+      </div>
+      
+      <div class="just" >
+      <button id="copy-description3" class="btn" >Copy to Clipboard</button>
+      <input type="text" id="copy-description3" value="Clipboard Text 5"/>
+      </div>
+      
+      <div class="just" >
+      <button id="copy-description4" class="btn" >Copy to Clipboard</button>
+      <input type="text" id="copy-description4" value="Clipboard Text 4"/>
+      </div>
+    
+    </div>
+  </div>
+<script>
+$( "button.btn" ).each(function() { 
+    var id=$(this).attr("id"); 
+    $('button#'+id).zclip({
+         copy:function(){
+			 
+			 return $('input#'+id).val();
+			 
+			 },
+    afterCopy:function(){
+        $( "button" ).each(function(){ 
+            var val=$(this).attr("id");
+            $(this).text("Copy "+val); 
+        });
+         $('button#'+id).text(id+" Copied"); 
+       setTimeout(function() {
+       window.location.href = "http://google.com/;"
+      }, 5000);
+    }
+    });
+});
+</script>
+
+</body>
+</html>
