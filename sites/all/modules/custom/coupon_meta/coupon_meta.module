@@ -1,33 +1,282 @@
 <?php
 
-function coupon_meta_init(){
+/**
+ * Implements hook_menu().
+ */
+
+function coupon_meta_menu() {
   
-   $html_head = array(
-    'browser_cache' => array(
-      '#tag' => 'meta',
-      '#attributes' => array(
-        'content' => 'no-cache, no-store, must-revalidate',
-        'http-equiv' => 'Cache-Control'
-      )
-    ),
-    'browser_pragma' => array(
-      '#tag' => 'meta',
-      '#attributes' => array(
-        'content' => 'no-cache',
-        'http-equiv' => 'Pragma'
-      )
-    ),
-    'browser_expires' => array(
-      '#tag' => 'meta',
-      '#attributes' => array(
-        'content' => '0',
-        'http-equiv' => 'Expires'
-      )
-    ),
+ $items['admin/config/coupon/metatagssettings'] = array( // this is an example of configuration link
+		'title' => t('Meta tags settings'), 
+		'description' => t('Global Meta tags settings'),
+		'page callback' => 'drupal_get_form',
+    'page arguments' => array('global_metatag_settings_form'),		
+		'type' => MENU_NORMAL_ITEM, 
+		'access arguments' => array('administer site configuration') ,
+	);
+  
+  return $items;
+}
+
+/**
+ * Admin Store meta tags settings menu callback.
+ *
+ * @see global_metatag_settings_form()
+ */
+function global_metatag_settings_form() {
+  
+  $form['global_matetags'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Store Metatags Setting'),
+    '#collapsible' => TRUE, 
+    '#collapsed' => FALSE,
   );
-  foreach ($html_head as $key => $data) {
-    drupal_add_html_head($data, $key);
+
+  $form['global_matetags']['global_store_metatags_title'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Store:Global Meta Title'),
+    '#default_value' => variable_get('global_store_metatags_title'),
+    '#description' => t('Tokens:[store-name], [site-name]'),
+  );
+    
+  $form['global_matetags']['global_store_metatags_keyword'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Store:Global Meta keyword'),
+    '#default_value' => variable_get('global_store_metatags_keyword'),
+    '#description' => t('Tokens:[store-name],[site-name]'),
+  );
+  
+  $form['global_matetags']['global_store_metatags_description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Store:Global Meta description'),
+    '#default_value' => variable_get('global_store_metatags_description'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description]'),
+  );
+
+  $form['global_matetags']['global_store_metatags_canonical'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Store:Global Meta Canonical'),
+    '#default_value' => variable_get('global_store_metatags_canonical'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description]'),
+  );
+  
+  $form['global_matetags']['global_store_metatags_shortlink'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Store:Global Meta shortlink'),
+    '#default_value' => variable_get('global_store_metatags_shortlink'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description]'),
+  );
+
+  
+   $form['global_coupon_matetags'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Coupon node Metatags Setting'),
+    '#collapsible' => TRUE, 
+    '#collapsed' => FALSE,
+  );
+
+  $form['global_coupon_matetags']['global_coupon_metatags_title'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Coupon:Global Meta Title'),
+    '#default_value' => variable_get('global_coupon_metatags_title'),
+    '#description' => t('Tokens:[coupon-name], [site-name]'),
+  );
+    
+  $form['global_coupon_matetags']['global_coupon_metatags_keyword'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Coupon:Global Meta keyword'),
+    '#default_value' => variable_get('global_coupon_metatags_keyword'),
+    '#description' => t('Tokens:[store-name],[coupon-name],[site-name]'),
+  );
+  
+  $form['global_coupon_matetags']['global_coupon_metatags_description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Coupon:Global Meta description'),
+    '#default_value' => variable_get('global_coupon_metatags_description'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description],[coupon-description]'),
+  );
+  
+  $form['global_coupon_matetags']['global_coupon_metatags_canonical'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Coupon:Global Meta Canonical'),
+    '#default_value' => variable_get('global_coupon_metatags_canonical'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description],[coupon-description]'),
+  );
+  
+  $form['global_coupon_matetags']['global_coupon_metatags_shortlink'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Coupon:Global Meta shortlink'),
+    '#default_value' => variable_get('global_coupon_metatags_shortlink'),
+    '#description' => t('Tokens:[store-name],[site-name],[store-description],[coupon-description]'),
+  );
+  
+  return system_settings_form($form);
+}
+
+
+
+
+
+/**
+ * Preprocesses the wrapping HTML.
+ *
+ * @param array &$variables
+ *   Template variables.
+ */
+function _coupon_meta_html_alter(&$vars) {
+  
+  
+  // Setup IE meta tag to force IE rendering mode
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function coupon_html_head_alter(&$head_elements) {
+  
+  $replace = array();
+  $site_name = variable_get('site_name');
+  $replace  = array('[site-name]'=>$site_name);
+  
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+  $nid = arg(1);
+  $node = node_load($nid);
+    
+  if(isset($node->field_stor[LANGUAGE_NONE][0]['tid']) && !empty($node->field_stor[LANGUAGE_NONE][0]['tid'])){
+  $query = db_select('taxonomy_term_data','ttd');
+  $query->fields('ttd',array('name'))->condition('tid',$node->field_stor[LANGUAGE_NONE][0]['tid'],'=');
+    
+  $store = $query->execute()->fetchAssoc();        
+  $replace +=array('[store-name]'=>$store['name']);          
   }
+  
+
+ $replace +=array('[coupon-name]'=>$node->title);
+ $replace +=array('[coupon-description]'=>_coupon_strwordwarp($node->body[LANGUAGE_NONE][0]['value'])); 
+ 
+/* Set Meta Title for coupon  */    
+      $coupon_title = variable_get('global_coupon_metatags_title');
+      if(!empty($coupon_title)) {
+          $meta_coupon_title = _coupon_strReplaceAssoc($replace, $coupon_title);
+          $head_elements['metatag_tile'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => $meta_coupon_title,
+            '#name' => 'title',
+            '#weight' => 1.5,  
+          );
+
+      }
+/* Set Meta keyword for coupon  */    
+      $coupon_keyword = variable_get('global_coupon_metatags_keyword');
+      
+      if(!empty($coupon_keyword)) {
+          $meta_coupon_keyword = _coupon_strReplaceAssoc($replace, $coupon_keyword);
+          $head_elements['metatag_keywords'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => $meta_coupon_keyword,
+            '#name' => 'keywords',
+            '#weight' => 2.1,  
+          );
+      }
+      
+/* Set Meta description for coupon  */    
+      $coupon_description = variable_get('global_coupon_metatags_description');
+      if(!empty($coupon_description)) {
+          $meta_coupon_description = _coupon_strReplaceAssoc($replace, $coupon_description);
+          $head_elements['metatag_description'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => $meta_coupon_description,
+            '#name' => 'description',
+            '#weight' => 2.5,  
+          );
+      }      
+ 
+}
+
+
+if(arg(0) == 'taxonomy' && arg(1) == 'term') {
+
+
+$tid = (int)arg(2);
+$term = taxonomy_term_load($tid);
+  if(is_object($term)) {
+ 
+    
+/* Set Meta Title for store  */    
+      $store_title = variable_get('global_store_metatags_title');
+      if(!empty($store_title)) {
+          $replace +=array('[store-name]'=>$term->name );
+          $meta_store_title = _coupon_strReplaceAssoc($replace, $store_title);
+          
+          $head_elements['metatag_tile'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => $meta_store_title,
+            '#name' => 'title',
+            '#weight' => 1.5,  
+          );
+
+      }
+/* Set Meta keyword for store  */    
+      $store_keyword = variable_get('global_store_metatags_keyword');
+      if(!empty($store_keyword)) {
+          $replace +=array('[store-name]'=>$term->name);
+          $meta_store_keyword = _coupon_strReplaceAssoc($replace, $store_keyword);
+          $head_elements['metatag_keywords'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => $meta_store_keyword,
+            '#name' => 'keywords',
+            '#weight' => 2.1,  
+          );
+      }
+      
+/* Set Meta description for store  */    
+      $store_description = variable_get('global_store_metatags_description');
+      if(!empty($store_description)) {
+          $replace +=array('[store-description]'=>$term->description);
+          $meta_store_description = _coupon_strReplaceAssoc($replace, $store_description);
+          $head_elements['metatag_keywords'] = array(
+            '#theme' => 'metatag',  
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#value' => _coupon_strwordwarp($meta_store_description),
+            '#name' => 'description',
+            '#weight' => 2.5,  
+          );
+      }      
+      
+ 
+      
+}
+        
+}
   
 }
 
+
+function _coupon_strReplaceAssoc(array $replace, $subject) { 
+   return str_replace(array_keys($replace), array_values($replace), $subject);    
+}
+
+function _coupon_strwordwarp($str, $length=150) { 
+  $arr = explode('__BREAK__', wordwrap($str, $length, "__BREAK__", true));
+  return $arr[0];
+}
