@@ -14,7 +14,6 @@ function coupon_meta_menu() {
 		'type' => MENU_NORMAL_ITEM, 
 		'access arguments' => array('administer site configuration') ,
 	);
-  
   return $items;
 }
 
@@ -114,39 +113,28 @@ function global_metatag_settings_form() {
 }
 
 
-
-
-
 /**
- * Preprocesses the wrapping HTML.
- *
- * @param array &$variables
- *   Template variables.
+ * Hook_html_head_alter
  */
-function _coupon_meta_html_alter(&$vars) {
-  
-  
-  // Setup IE meta tag to force IE rendering mode
- 
+function coupon_html_head_alter(&$head_elements) {
+  unset($head_elements['system_meta_generator']);
 }
 
 
 
+/**
+ * Admin Store & Coupon meta tags set
+ *
+ * @see _coupon_meta()
+ */
 
-
-
-
-
-
-
-
-
-function coupon_html_head_alter(&$head_elements) {
-  
+function _coupon_meta() {
+  $head_elements = array();
   $replace = array();
   $site_name = variable_get('site_name');
   $replace  = array('[site-name]'=>$site_name);
   
+  /* Coupon node meta tags settings */
   if (arg(0) == 'node' && is_numeric(arg(1))) {
   $nid = arg(1);
   $node = node_load($nid);
@@ -159,123 +147,126 @@ function coupon_html_head_alter(&$head_elements) {
   $replace +=array('[store-name]'=>$store['name']);          
   }
   
-
  $replace +=array('[coupon-name]'=>$node->title);
  $replace +=array('[coupon-description]'=>_coupon_strwordwarp($node->body[LANGUAGE_NONE][0]['value'])); 
- 
+
 /* Set Meta Title for coupon  */    
       $coupon_title = variable_get('global_coupon_metatags_title');
       if(!empty($coupon_title)) {
           $meta_coupon_title = _coupon_strReplaceAssoc($replace, $coupon_title);
-          $head_elements['metatag_tile'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
+          $head_elements['coupon_metatag_title'] = array(
             '#tag' => 'meta',
-            '#value' => $meta_coupon_title,
-            '#name' => 'title',
-            '#weight' => 1.5,  
+            '#attributes' => array(
+            'name' => 'title', 
+            'content' => $meta_coupon_title,
+            ), 
+            '#weight' => 1.5,    
           );
-
+       
+      drupal_add_html_head($meta_coupon_title, 'title');
       }
 /* Set Meta keyword for coupon  */    
       $coupon_keyword = variable_get('global_coupon_metatags_keyword');
-      
       if(!empty($coupon_keyword)) {
           $meta_coupon_keyword = _coupon_strReplaceAssoc($replace, $coupon_keyword);
-          $head_elements['metatag_keywords'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
+          $head_elements['coupon_metatag_keywords'] = array( 
             '#tag' => 'meta',
-            '#value' => $meta_coupon_keyword,
-            '#name' => 'keywords',
+            '#attributes' => array(
+              'name' => 'keywords', 
+              'content' => $meta_coupon_keyword,
+            ),  
             '#weight' => 2.1,  
-          );
+          );  
       }
       
 /* Set Meta description for coupon  */    
       $coupon_description = variable_get('global_coupon_metatags_description');
       if(!empty($coupon_description)) {
           $meta_coupon_description = _coupon_strReplaceAssoc($replace, $coupon_description);
-          $head_elements['metatag_description'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
+          $head_elements['coupon_metatag_description'] = array(
             '#tag' => 'meta',
-            '#value' => $meta_coupon_description,
-            '#name' => 'description',
+            '#attributes' => array(
+              'name' => 'description', 
+              'content' => $meta_coupon_description,
+            ),  
             '#weight' => 2.5,  
-          );
-      }      
- 
-}
-
-
-if(arg(0) == 'taxonomy' && arg(1) == 'term') {
-
-
-$tid = (int)arg(2);
-$term = taxonomy_term_load($tid);
-  if(is_object($term)) {
- 
-    
-/* Set Meta Title for store  */    
-      $store_title = variable_get('global_store_metatags_title');
-      if(!empty($store_title)) {
-          $replace +=array('[store-name]'=>$term->name );
-          $meta_store_title = _coupon_strReplaceAssoc($replace, $store_title);
-          
-          $head_elements['metatag_tile'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
-            '#tag' => 'meta',
-            '#value' => $meta_store_title,
-            '#name' => 'title',
-            '#weight' => 1.5,  
-          );
-
-      }
-/* Set Meta keyword for store  */    
-      $store_keyword = variable_get('global_store_metatags_keyword');
-      if(!empty($store_keyword)) {
-          $replace +=array('[store-name]'=>$term->name);
-          $meta_store_keyword = _coupon_strReplaceAssoc($replace, $store_keyword);
-          $head_elements['metatag_keywords'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
-            '#tag' => 'meta',
-            '#value' => $meta_store_keyword,
-            '#name' => 'keywords',
-            '#weight' => 2.1,  
           );
       }
       
-/* Set Meta description for store  */    
-      $store_description = variable_get('global_store_metatags_description');
-      if(!empty($store_description)) {
-          $replace +=array('[store-description]'=>$term->description);
-          $meta_store_description = _coupon_strReplaceAssoc($replace, $store_description);
-          $head_elements['metatag_keywords'] = array(
-            '#theme' => 'metatag',  
-            '#type' => 'html_tag',
-            '#tag' => 'meta',
-            '#value' => _coupon_strwordwarp($meta_store_description),
-            '#name' => 'description',
-            '#weight' => 2.5,  
-          );
-      }      
-      
- 
-      
 }
+
+  /* Store mate tags */
+  if(arg(0) == 'taxonomy' && arg(1) == 'term') {
+    $tid = (int)arg(2);
+    $term = taxonomy_term_load($tid);
+      if(is_object($term)) {
         
-}
+          $replace +=array('[store-name]'=>$term->name );        
+          $replace +=array('[store-description]'=>$term->description);  
+          
+    /* Set Meta Title for store  */    
+          $store_title = variable_get('global_store_metatags_title');
+          if(!empty($store_title)) {
+              $meta_store_title = _coupon_strReplaceAssoc($replace, $store_title);
+              $head_elements['store_metatag_tile'] = array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                  'name' => 'descriptitletion', 
+                  'content' => $meta_store_title,
+                ),               
+                '#weight' => 1.5,  
+              );
+          }
+    /* Set Meta keyword for store  */    
+          $store_keyword = variable_get('global_store_metatags_keyword');
+          if(!empty($store_keyword)) {
+              $meta_store_keyword = _coupon_strReplaceAssoc($replace, $store_keyword);
+              $head_elements['store_metatag_keywords'] = array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                  'name' => 'keywords', 
+                  'content' => $meta_store_keyword,
+                ),              
+                '#weight' => 2.1,  
+              );
+          }
+
+    /* Set Meta description for store  */    
+          $store_description = variable_get('global_store_metatags_description');
+          if(!empty($store_description)) {
+              $meta_store_description = _coupon_strReplaceAssoc($replace, $store_description);
+              $head_elements['store_metatag_keywords'] = array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                  'name' => 'keywords', 
+                  'content' => $meta_store_keyword,
+                ),  
+                '#weight' => 2.5,  
+              );
+          }            
+    } /* End store mate tags */       
+  }
+
+  if(count($head_elements)){
+    foreach ($head_elements as $key=>$meta_ary) {
+          drupal_add_html_head($meta_ary, $key);
+    }
+  }
   
 }
 
-
+/**
+ * All tokens(In single array) replace by value
+ * @see _coupon_strReplaceAssoc
+ */
 function _coupon_strReplaceAssoc(array $replace, $subject) { 
    return str_replace(array_keys($replace), array_values($replace), $subject);    
 }
 
+/**
+ * Long string break into by given lenght but without word break
+ * @see _coupon_strwordwarp
+ */
 function _coupon_strwordwarp($str, $length=150) { 
   $arr = explode('__BREAK__', wordwrap($str, $length, "__BREAK__", true));
   return $arr[0];

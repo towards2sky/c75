@@ -1,7 +1,7 @@
 name = Coupon Metatage
 description = Coupon Meta tag
 core = 7.x
-scripts[] = zcopy.js
+configure = admin/config/coupon/metatagssettings
 package = coupon
 ; Information added by Drupal.org packaging script on 2014-05-06
 version = "7.x-1.1"
