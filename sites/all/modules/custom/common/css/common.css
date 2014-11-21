@@ -1,0 +1,17 @@
+
+.show-button {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+ .node-copy-button {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+
+div.show-code {
+  display:none;
+}
+div.coup-url {
+  display:none;
+}
+        
+        

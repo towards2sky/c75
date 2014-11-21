@@ -115,6 +115,16 @@ function coupon_process_maintenance_page(&$variables) {
 function coupon_preprocess_node(&$variables) {
   if ($variables['view_mode'] == 'full' && node_is_page($variables['node'])) {
     $variables['classes_array'][] = 'node-full';
+  $nodeObj = $variables['node'];
+  $field_coupon_code = field_get_items('node', $nodeObj, 'field_coupon_code');
+  $field_coupon_end_date = field_get_items('node', $nodeObj, 'field_coupon_end_date');
+  $is_active = field_get_items('node', $nodeObj, 'field_is_active');
+  
+  $variables['coupon_code'] = $field_coupon_code[0]['value'];  
+  $variables['is_active'] = $is_active[0]['value']; 
+  
+  $variables['coupon_end_date'] = $field_coupon_end_date[0]['value']; 
+    
   }
 }
 

@@ -1,22 +1,21 @@
 <?php
 
 function zclipcopy_init(){
-  $moviepath = libraries_get_path('jquery.zclip').'/ZeroClipboard.swf';
-  variable_get('same_page_redirection', 'no');
+  global $base_url;
+  $page_type = arg(0);
+  $moviepath = $base_url.'/'.libraries_get_path('jquery.zclip').'/ZeroClipboard.swf';
   $js_setting_variables = array(
       'moviepath'=> $moviepath,
       'coupon_same_page_redirection' => variable_get('same_page_redirection', 'off'),
       'coupon_new_page_redirection' => variable_get('new_page_redirection', 'off'),
+      'page_type'=> $page_type,
+      'redirect_delay' => variable_get('redirection_delay', 5000),
       );
-//  print '<pre>';
-//  print_r($js_setting_variables);
-//  print '</pre>';
   drupal_add_js(array('zclipcopy' => $js_setting_variables), 'setting');
 	drupal_add_js(libraries_get_path('jquery.zclip') .'/jquery.zclip.js', array('scope' => 'footer', 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module','zclipcopy') .'/zcopy.js',array('scope' => 'footer', 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'zclipcopy') . '/css/zcopy.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
-  
 }
 
 
@@ -83,7 +82,12 @@ function zclipcopy_settings_form() {
     '#default_value' => variable_get('new_page_redirection', 'off'),
     '#description' => t('Open currect coupon in tab while click on show coupon.'),
   );
-  
+  $form['coupon_list']['redirection_delay'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Delay Time'),
+    '#default_value' => variable_get('redirection_delay', 5000),
+    '#description' => t('Open page delay time.'),
+  );
    $form['coupon_node'] = array(
     '#type' => 'fieldset',
     '#title' => t('Coupon Node view Setting'),

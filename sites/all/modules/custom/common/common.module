@@ -1,0 +1,62 @@
+<?php
+
+function common_init(){
+  /*
+    $store_id = 1;
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+  $nid = arg(1);
+
+      $query = db_select('field_data_field_store','fs');
+      $query->fields('fs',array('field_store_tid'))
+              ->condition('entity_type','node')
+              ->condition('bundle','add_coupon')
+              ->condition('entity_id',$nid);
+      $q_result = $query->execute()->fetchAssoc(); 
+     
+      if($q_result['field_store_tid']) {
+         
+        $store_id = $q_result['field_store_tid'];
+      }
+  }
+  if(arg(0) == 'taxonomy' && arg(1) == 'term') {
+    
+
+    $store_id = (int)arg(2); 
+    
+    
+  }
+  */
+  
+//  print $store_id;
+  drupal_add_css(drupal_get_path('module', 'common') . '/css/common.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+
+  }
+
+  
+  
+  
+function get_term_id() {
+ 
+  $store_id = 1;
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+  $nid = arg(1);
+  $node = node_load($nid);
+  $field_store = field_get_items('node', $node, 'field_store');
+  $storeid = $field_store[0]['tid'];
+  
+      $query = db_select('field_data_field_store','fs');
+      $query->fields('fs',array('field_store_tid'))
+              ->condition('entity_type','node')
+              ->condition('bundle','add_coupon')
+              ->condition('entity_id',$nid);
+      $q_result = $query->execute()->fetchAssoc();  
+      if($q_result['field_store_tid']) {
+        $store_id = $q_result['field_store_tid'];
+      }
+  }
+  if(arg(0) == 'taxonomy' && arg(1) == 'term') { $store_id = (int)arg(2);  }
+  
+  return $store_id;
+  
+}
+
