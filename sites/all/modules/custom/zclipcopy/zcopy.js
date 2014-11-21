@@ -28,22 +28,15 @@ $( ".show-button" ).each(function() {
     });
 });
 
-$( ".show-button" ).each(function() {
-    var id=jQuery(this).attr("id"); 
-    $('span#'+id).zclip({
+
+    $('span#node-copy-button').zclip({
       path:Drupal.settings.zclipcopy.moviepath,
-         copy:function(){
-			 return $('#copy-'+id).text();
+       copy:function(){
+          return $('#node-coupon-code').text();
 			 },
       afterCopy:function(){
-        $( "span" ).each(function(){
-          $('.show-text').hide();
-          $('.show-code').show();
-           var span_id=$(this).attr("id");
-           $('#'+span_id).html( 'Copy code'); 
-        });
-        $('#'+id).html( 'Code copied..'); 
-       var afl_url = $.trim($('#url-'+id).html());
+        $('#node-copy-button').html( 'Code copied..'); 
+        var afl_url = $.trim($('#url-'+id).html());
         if( Drupal.settings.zclipcopy.coupon_same_page_redirection == 'on'){
          setTimeout(function() {
                 window.location.href = afl_url;
@@ -54,7 +47,7 @@ $( ".show-button" ).each(function() {
      } 
     }
     });
-});
+
 
 
 

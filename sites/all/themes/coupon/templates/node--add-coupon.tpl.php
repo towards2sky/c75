@@ -113,13 +113,13 @@
     ?>
     <?php if($coupon_code): ?>
     <div class="ndoe-coupon">
-      <div class="node-coupon-code" ><?php print $coupon_code; ?> </div>
-      <div class="node-coupon-button" ><span class="node-copy-button">Copy coupon</span> </div>
+      <div class="node-coupon-code" id="node-coupon-code" ><?php print $coupon_code; ?> </div>
+      <div class="node-coupon-button" id="node-coupon-button" ><span class="node-copy-button" id="node-copy-button" >Copy coupon</span> </div>
     </div>
     <?php else: ?>
     <div class="node-coupon">
       <div class="node-coupon-code" >No Coupon required</div>
-      <div class="node-coupon-button" ><span class="node-copy-button">Click to Active Deal</span> </div>
+      <div class="node-coupon-button" id="node-coupon-button" ><span class="node-copy-button" id="node-copy-button" >Click to Active Deal</span> </div>
     </div>
   </div>
     <?php endif; ?>
