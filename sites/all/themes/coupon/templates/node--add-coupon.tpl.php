@@ -102,14 +102,6 @@
       // We hide the comments and links now so that we can render them later.
       hide($content['comments']);
       hide($content['links']);
-      print '<pre>';
-      //print_r($node);
-      $field_coupon_code = field_get_items('node', $node, 'field_coupon_code');
-
-      $field_coupon_valid = field_get_items('node', $node, 'field_coupon_end_date');
-      
-      print '</pre>';
-      
     ?>
     <?php if($coupon_code): ?>
     <div class="ndoe-coupon">
