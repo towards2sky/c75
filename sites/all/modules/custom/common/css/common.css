@@ -1,17 +1,44 @@
-
-.show-button {
-    background: rgb(66, 184, 221); /* this is a light blue */
+/*
+.deal-button {
+    background: rgb(66, 184, 221); 
 }
- .node-copy-button {
-    background: rgb(66, 184, 221); /* this is a light blue */
+.deal-button:hover {
+  cursor: pointer;
 }
 
+span#node-copy-button {
+  padding-top: 5px;
+  background: rgb(66, 184, 221); 
+}
+span#node-copy-button:hover{
+  cursor: pointer;
+}
+
+.show-button:hover{
+  cursor: pointer;
+}
+.go-to-shop{
+  background-color: #777;
+  height: 40px;
+}
+.go-to-shop:hover{
+  cursor: pointer;
+}
+
+#shop-url{
+  display: none;
+}   
 
 div.show-code {
+  //display:none;
+}
+*/
+
+
+#shop-url, .coup-url {
   display:none;
 }
-div.coup-url {
-  display:none;
+.all-type-list .active {
+  border: 1px solid #008000;
 }
-        
-        
+
