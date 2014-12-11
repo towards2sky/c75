@@ -25,7 +25,8 @@
 
 $nobj = $row->_field_data['nid']['entity'];
 $alias = drupal_get_path_alias('node/'.$nobj->nid);
-$body = render(field_view_field('node', $nobj, 'body',array('label'=>'hidden'))); 
+$body_field = field_view_field('node', $nobj, 'body',array('label'=>'hidden'));
+$body = render($body_field); 
 $field_coupon_url = field_get_items('node', $nobj, 'field_coupon_url'); 
 $field_coupon_code = field_get_items('node', $nobj, 'field_coupon_code'); 
 $title = l(t($nobj->title), $alias, array('attributes' => array('target' => '_blank')));
