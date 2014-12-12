@@ -97,6 +97,19 @@ function commom_settings_form() {
 
 
 /**
+ *  Implement hook_form_alter
+ */
+
+function common_form_alter(&$form, &$form_state, $form_id) {
+  print $form_id;
+  if($form_id == 'metatag_config_edit_form'){
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#type'] = 'textarea';
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#cols'] = 2;
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#rows'] = 2;
+  }
+}
+
+/**
  * Return current store id from URL or exist on node 
  */
 function get_term_id() {
