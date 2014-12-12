@@ -116,7 +116,6 @@ function coupon_preprocess_node(&$variables) {
   if ($variables['view_mode'] == 'full' && node_is_page($variables['node'])) {
   $variables['classes_array'][] = 'node-full';
   $nodeObj = $variables['node'];
-  firep($nodeObj);
   $field_coupon_code = field_get_items('node', $nodeObj, 'field_coupon_code');
   $field_coupon_end_date = field_get_items('node', $nodeObj, 'field_coupon_end_date');
   $is_active = field_get_items('node', $nodeObj, 'field_is_active');
