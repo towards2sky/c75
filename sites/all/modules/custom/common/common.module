@@ -64,17 +64,58 @@ function _common_coupon_type_list() {
  */
 function common_menu() {
    // Administration pages.
-  $items['admin/config/coupon/dateformat'] = array( // this is an example of configuration link
-		'title' => t('Commom Settings'), 
-		'description' => t('Commom module Setting'),
-		'page callback' => 'drupal_get_form',
-    'page arguments' => array('commom_settings_form'),		
-		'type' => MENU_NORMAL_ITEM, 
-		'access arguments' => array('administer site configuration') ,
-	);
-  
+    $items['admin/config/coupon/dateformat'] = array( // this is an example of configuration link
+                  'title' => t('Commom Settings'), 
+                  'description' => t('Commom module Setting'),
+                  'page callback' => 'drupal_get_form',
+      'page arguments' => array('commom_settings_form'),		
+                  'type' => MENU_NORMAL_ITEM, 
+                  'access arguments' => array('administer site configuration') ,
+          );
+    $items['couponcrone'] = array( // this is an example of configuration link
+                  'title' => t('Check Coupon expair'), 
+                  'description' => t('Check Coupon expire'),
+                  'page callback' => 'coupon_node_expire',
+                  'type' => MENU_NORMAL_ITEM, 
+                  'access arguments' => array('administer site configuration') ,
+          );
+
   return $items;
 }
+
+/**
+ * 
+ * 
+ */
+
+function coupon_node_expire(){
+    
+    $today = date("Y-m-d 00:00:00");
+    $query = db_select('field_data_field_coupon_end_date','cnd');
+    $query->join('field_data_field_is_active', 'ia', 'ia.entity_id = cnd.entity_id');
+    $query->fields('cnd',array('entity_id','field_coupon_end_date_value'));
+    $query->fields('ia',array('field_is_active_value'));
+    $query->condition('ia.field_is_active_value',0);
+    $query->condition('cnd.bundle','add_coupon');
+    $query->condition('cnd.field_coupon_end_date_value', $today, '<');
+    $result = $query->execute();
+    $res_count = $query->execute()->rowCount();
+    if($res_count > 0){
+        $expaired_coupon = array();
+        while($record = $result->fetchAssoc()) {
+            $expaired_coupon[] = $record['entity_id'];
+        } 
+        $num_updated = db_update('field_data_field_is_active')
+            ->fields(array('field_is_active_value' => 1))
+            ->condition ('entity_id', $expaired_coupon, 'IN')
+            ->execute();
+        print $num_updated." coupon has been expaied.";  
+    }else {
+        print "No coupon for expaire";
+    }
+    
+}
+
 
 /**
  * Admin settings menu callback.
@@ -101,7 +142,6 @@ function commom_settings_form() {
  */
 
 function common_form_alter(&$form, &$form_state, $form_id) {
-  print $form_id;
   if($form_id == 'metatag_config_edit_form'){
     $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#type'] = 'textarea';
     $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#cols'] = 2;

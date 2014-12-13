@@ -37,13 +37,13 @@ $(".show-button").on( "click", function() {
  if(pid){
    var win_url = $("#"+pid).find('a:first').attr('href');
  }
-  if( Drupal.settings.zclipcopy.coupon_same_page_redirection != 'on'){
+  if( Drupal.settings.zclipcopy.coupon_same_page_redirection == 'on'){
       setTimeout(function() {
-        afl_url = 'http://www.google.co.in'; // this only for demo
+        //afl_url = 'http://www.google.co.in'; // this only for demo
             window.location.href = afl_url;
         }, 5000);
   }
-  if( Drupal.settings.zclipcopy.coupon_new_page_redirection != 'on'){
+  if( Drupal.settings.zclipcopy.coupon_new_page_redirection == 'on'){
   window.open(win_url,'_blank');
   }
 });
