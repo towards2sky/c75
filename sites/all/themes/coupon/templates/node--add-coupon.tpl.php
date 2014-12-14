@@ -89,14 +89,14 @@
     </h2>
   <?php endif; ?>
   <?php print render($title_suffix); ?>
-
+<!--
   <?php if ($display_submitted): ?>
     <div class="meta submitted">
       <?php print $user_picture; ?>
       <?php print $submitted; ?>
     </div>
   <?php endif; ?>
-
+-->
   <div class="content clearfix"<?php print $content_attributes; ?>>
     <?php
       // We hide the comments and links now so that we can render them later.
@@ -105,13 +105,15 @@
     ?>
     <?php if($coupon_code): ?>
     <div class="ndoe-coupon">
-      <div class="node-coupon-code" id="node-coupon-code" ><?php print $coupon_code; ?> </div>
+      <div id="shop-url">dsfsdf<?php print $coupon_url; ?></div>
+      <div class="node-coupon-code" id="node-coupon-code" ><?php print $coupon_code; ?></div>
       <div class="node-coupon-button" id="node-coupon-button" ><span class="node-copy-button" id="node-copy-button" >Copy coupon</span> </div>
     </div>
     <?php else: ?>
     <div class="node-coupon">
-      <div class="node-coupon-code" >No Coupon required</div>
-      <div class="node-coupon-button" id="node-coupon-button" ><span class="node-copy-button" id="node-copy-button" >Click to Active Deal</span> </div>
+      <div id="shop-url"><?php print $coupon_url; ?>ddd</div>
+      <!-- <div class="node-coupon-code" >No Coupon required</div> -->
+      <div class="node-coupon-button" id="node-deal-button" ><span class="go-to-shop" id="go-to-shop" >Go to Shop</span></div>
     </div>
   </div>
     <?php endif; ?>
@@ -120,7 +122,7 @@
   </div>
   <div class="node-coupon-bottom" >
     <?php if($is_active): ?>
-    <div class="coupon-valid"><span>Expired on:</span><samp class="valid-date"> <?php print $coupon_end_date; ?> </span></div>
+    <div class="coupon-valid"><span>Expired on:</span><span class="valid-date"> <?php print $coupon_end_date; ?> </span></div>
     <div class="coupon-verify"><span>Verified</span></div>
     <?php else: ?>
     <div class="coupon-expaird"><span>Expired</span></div>

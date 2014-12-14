@@ -1,11 +1,158 @@
 <?php
 
+/**
+* Implements hook_init().
+*/
 function common_init(){
-  drupal_add_css(drupal_get_path('module', 'common') . '/css/common.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  global $base_url,$theme;
+  drupal_add_css(drupal_get_path('theme', $theme) . '/css/coupon.css', array('group' => CSS_THEME, 'every_page' => TRUE,'weight'=>25));
+  drupal_add_css(drupal_get_path('module', 'common') . '/css/common.css', array('group' => CSS_THEME, 'every_page' => TRUE,'weight'=>51));
+  drupal_add_js(drupal_get_path('module','common') .'/js/common.js',array('scope' => 'footer', 'every_page' => TRUE));
   }
 
+/**
+* Implements hook_block_info().
+*/
+function common_block_info() {
+  $blocks = array();
+  $blocks['coupon_type_list'] = array(
+    'info' => t('Coupon Type List'),
+  );
+  return $blocks;
+}
+
+/**
+* Implements hook_block_view().
+*/
+function common_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'coupon_type_list':
+      $block['subject'] = '';
+      $block['content'] = _common_coupon_type_list();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Coupon & deal count block content.
+ */
+function _common_coupon_type_list() { 
+  $store_id = get_term_id();
+  $query = db_select('field_data_field_store', 'fds');
+  $query->join('field_data_field_coupon_type', 'fcy', 'fcy.entity_id = fds.entity_id');
+  $query->fields('fcy',array('field_coupon_type_value'));
+  $query->condition('field_store_tid',$store_id);
+  
+  $query_deals = clone $query;
+  $query_coupons = clone $query;
+          
+  $all = $query->execute()->rowCount();     
+  $coupons = $query_coupons->condition('field_coupon_type_value','%Coupon%','LIKE')->execute()->rowCount();
+  $deals = $query_deals->condition('field_coupon_type_value','%Deal%','LIKE')->execute()->rowCount();
+  $output = "<div class='all-type-list'>"
+          . "<div id='all-type' class='list-type active' >All ($all)</div>"
+          . "<div id='all-coupons' class='list-type' >Coupons ($coupons)</div>"
+          . "<div id='all-deals' class='list-type' >Deals ($deals)</div>"
+          . "</div>";
+  return $output;
+}
+
+/**
+ * Implement hook_menu()
+ */
+function common_menu() {
+   // Administration pages.
+    $items['admin/config/coupon/dateformat'] = array( // this is an example of configuration link
+                  'title' => t('Commom Settings'), 
+                  'description' => t('Commom module Setting'),
+                  'page callback' => 'drupal_get_form',
+      'page arguments' => array('commom_settings_form'),		
+                  'type' => MENU_NORMAL_ITEM, 
+                  'access arguments' => array('administer site configuration') ,
+          );
+    $items['couponcrone'] = array( // this is an example of configuration link
+                  'title' => t('Check Coupon expair'), 
+                  'description' => t('Check Coupon expire'),
+                  'page callback' => 'coupon_node_expire',
+                  'type' => MENU_NORMAL_ITEM, 
+                  'access arguments' => array('administer site configuration') ,
+          );
+
+  return $items;
+}
+
+/**
+ * 
+ * 
+ */
+
+function coupon_node_expire(){
+    
+    $today = date("Y-m-d 00:00:00");
+    $query = db_select('field_data_field_coupon_end_date','cnd');
+    $query->join('field_data_field_is_active', 'ia', 'ia.entity_id = cnd.entity_id');
+    $query->fields('cnd',array('entity_id','field_coupon_end_date_value'));
+    $query->fields('ia',array('field_is_active_value'));
+    $query->condition('ia.field_is_active_value',0);
+    $query->condition('cnd.bundle','add_coupon');
+    $query->condition('cnd.field_coupon_end_date_value', $today, '<');
+    $result = $query->execute();
+    $res_count = $query->execute()->rowCount();
+    if($res_count > 0){
+        $expaired_coupon = array();
+        while($record = $result->fetchAssoc()) {
+            $expaired_coupon[] = $record['entity_id'];
+        } 
+        $num_updated = db_update('field_data_field_is_active')
+            ->fields(array('field_is_active_value' => 1))
+            ->condition ('entity_id', $expaired_coupon, 'IN')
+            ->execute();
+        print $num_updated." coupon has been expaied.";  
+    }else {
+        print "No coupon for expaire";
+    }
+    
+}
+
+
+/**
+ * Admin settings menu callback.
+ *
+ * @see commom_settings_form()
+ */
+function commom_settings_form() {
+  $form['common_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Commom Settings'),
+  );
+  $form['common_settings']['expired_date_formate'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Expired data formate'),
+    '#default_value' => variable_get('expired_date_formate', 'd-m-Y'),
+    '#description' => t('Date formate for expired coupons.'),
+  );
+  return system_settings_form($form);
+}
+
+
+/**
+ *  Implement hook_form_alter
+ */
+
+function common_form_alter(&$form, &$form_state, $form_id) {
+  if($form_id == 'metatag_config_edit_form'){
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#type'] = 'textarea';
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#cols'] = 2;
+    $form['metatags'][LANGUAGE_NONE]['keywords']['value']['#rows'] = 2;
+  }
+}
+
+/**
+ * Return current store id from URL or exist on node 
+ */
 function get_term_id() {
- 
   $store_id = 0;
   if (arg(0) == 'node' && is_numeric(arg(1))) {
   $nid = arg(1);
@@ -24,8 +171,6 @@ function get_term_id() {
       }
   }
   if(arg(0) == 'taxonomy' && arg(1) == 'term') { $store_id = (int)arg(2);  }
-  
   return $store_id;
   
 }
-

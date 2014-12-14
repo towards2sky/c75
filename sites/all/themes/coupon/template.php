@@ -114,17 +114,23 @@ function coupon_process_maintenance_page(&$variables) {
  */
 function coupon_preprocess_node(&$variables) {
   if ($variables['view_mode'] == 'full' && node_is_page($variables['node'])) {
-    $variables['classes_array'][] = 'node-full';
+  $variables['classes_array'][] = 'node-full';
   $nodeObj = $variables['node'];
   $field_coupon_code = field_get_items('node', $nodeObj, 'field_coupon_code');
   $field_coupon_end_date = field_get_items('node', $nodeObj, 'field_coupon_end_date');
   $is_active = field_get_items('node', $nodeObj, 'field_is_active');
+  $field_coupon_url = field_get_items('node', $nodeObj, 'field_coupon_url');
   
   $variables['coupon_code'] = $field_coupon_code[0]['value'];  
   $variables['is_active'] = $is_active[0]['value']; 
+  $date_formate = variable_get('expired_date_formate', 'd-m-Y');
   
-  $variables['coupon_end_date'] = $field_coupon_end_date[0]['value']; 
-    
+  $expair_date = date($date_formate, strtotime($field_coupon_end_date[0]['value']));
+  $variables['coupon_end_date'] = $expair_date; 
+  
+  $coupon_url = ''; 
+  if($field_coupon_url[0]['value']){ $coupon_url = $field_coupon_url[0]['value']; }
+      $variables['coupon_url'] = $coupon_url;   
   }
 }
 

@@ -1,0 +1,1 @@
+<?php include 'coupon-deal-list.php'; ?>
