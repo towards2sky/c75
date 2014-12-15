@@ -43,7 +43,7 @@ $('span#node-copy-button').zclip({
         $('#node-copy-button').html( 'Code copied'); 
         var afl_url = $.trim($('#url-'+id).html());
         if( Drupal.settings.zclipcopy.coupon_same_page_redirection == 'on'){
-         setTimeout(function() { window.location.href = afl_url;}, 5000);
+         setTimeout(function() { window.location.href = afl_url;}, Drupal.settings.zclipcopy.redirect_delay);
       }
       if( Drupal.settings.zclipcopy.coupon_new_page_redirection == 'on'){
        window.open(afl_url,'_blank');

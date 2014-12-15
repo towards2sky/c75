@@ -41,7 +41,7 @@ $(".show-button").on( "click", function() {
       setTimeout(function() {
         //afl_url = 'http://www.google.co.in'; // this only for demo
             window.location.href = afl_url;
-        }, 5000);
+        }, Drupal.settings.zclipcopy.redirect_delay);
   }
   if( Drupal.settings.zclipcopy.coupon_new_page_redirection == 'on'){
   window.open(win_url,'_blank');
@@ -59,9 +59,9 @@ $(".deal-button").on( "click", function() {
       setTimeout(function() {
         afl_url = 'http://www.google.co.in';// this only for demo
             window.location.href = afl_url;
-        }, 5000);
+        }, Drupal.settings.zclipcopy.redirect_delay);
   }
-  if( Drupal.settings.zclipcopy.coupon_new_page_redirection != 'on'){
+  if( Drupal.settings.zclipcopy.coupon_new_page_redirection == 'on'){
   window.open(win_url,'_blank');
   }
 });
@@ -72,7 +72,7 @@ $('.coup-title').on('click',function(){
       setTimeout(function() {
         afl_url = 'http://www.google.co.in'; // this only for demo
             window.location.href = afl_url;
-        }, 5000);
+        }, Drupal.settings.zclipcopy.redirect_delay);
   }
 });
 
